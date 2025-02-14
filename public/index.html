@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0 auto;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 600px;
+    }
+
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      background-color: #222;
+      border-bottom: 1px solid #ccc;
+      color: white;
+    }
+
+    #chat div {
+      margin-bottom: 10px;
+    }
+
+    .username.self {
+      color: #4c80b7;
+      font-weight: bold;
+    }
+    .username.friend {
+      color: rgb(242, 164, 7);
+      font-weight: bold;
+    }
+
+    #message-form {
+      display: flex;
+      padding: 10px;
+      background-color: #333;
+    }
+
+    #message-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      margin-right: 10px;
+      color: white;
+      background-color: #444;
+      font-size: 16px;
+    }
+
+    #send-button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #send-button:hover {
+      background-color: #0056b3;
+    }
+
+  </style>
+</head>
+<body>
+  <div id="chat"></div>
+  <form id="message-form">
+    <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off">
+    <button type="submit" id="send-button">Send</button>
+  </form>
+
+  <script>
+    // Connect to WebSocket server
+    const socket = new WebSocket(`ws://${window.location.host}`);
+
+    // Get references to DOM elements
+    const chat = document.getElementById("chat");
+    const messageForm = document.getElementById("message-form");
+    const messageInput = document.getElementById("message-input");
+
+    //Append and display messages
+    function addMessage(message, isOwnMessage = false)
+    {
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message");
+      messageDiv.innerHTML = isOwnMessage
+      ? `<span class="username self">You:</span> ${message}`
+      : `<span class= "username friend">Friend:</span> ${message}`;
+      chat.appendChild(messageDiv);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    //Handle incoming ws messages
+    socket.addEventListener("message", (event) => {
+      addMessage(event.data);
+    });
+
+    //Handle form submission to send messages
+    messageForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const message = messageInput.value.trim();
+      if (message) {
+        socket.send(message);
+        addMessage(message, true);
+        messageInput.value = "";
+        messageInput.focus();
+      }
+    });
+
+    //Submit with enter key
+    messageInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        messageForm.requestSubmit();
+      }
+    });
+  </script>
+</body>
+</html>
