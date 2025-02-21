@@ -10,7 +10,7 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 // Serve static files from the "public" directory
-app.use(express.static("public"));
+app.use(express.static("docs"));
 
 // Store connected clients
 const clients = new Set();
