@@ -2,4 +2,4 @@
 
 App can be viewed using this link: websocket-server-env.eba-crjzue9b.us-east-1.elasticbeanstalk.com
 
-*Please do not include any personal/important information as the site is using http therefore is unsecure.
+*Please do not include any personal/sensitive information as the site is using http therefore is unsecure.
